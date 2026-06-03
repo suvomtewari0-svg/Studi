@@ -149,9 +149,15 @@ function pauseTimer() {
 function resetTimer() {
   T.running = false; clearInterval(T.handle); T.remaining = T.total; hideFocusOverlay(); render();
 }
-function setTotal(mins) {
+function setTotal(mins, light) {
   mins = Math.max(1, Math.min(240, Math.round(mins)));
-  T.total = mins * 60; if (!T.running) T.remaining = T.total; render();
+  T.total = mins * 60;
+  if (!T.running) T.remaining = T.total;
+  if (light) {
+    paintTimer();
+    const rd = $("#customRead"); if (rd) rd.textContent = mins + "m";
+    document.querySelectorAll('[data-act="preset"]').forEach((b) => b.classList.toggle("on", +b.dataset.m === mins));
+  } else { render(); }
 }
 function completeTimer() {
   clearInterval(T.handle); T.running = false;
@@ -371,9 +377,13 @@ function timerScreen() {
       <div class="presets">
         ${[15, 25, 50].map((p) => `<button class="chip ${mins === p && !isCustom() ? "on" : ""}" data-act="preset" data-m="${p}" ${T.running ? "disabled" : ""}>${p}m</button>`).join("")}
       </div>
-      <div class="custom-row">
-        <input id="customMin" class="input" type="number" min="1" max="240" placeholder="min" ${T.running ? "disabled" : ""}>
-        <button class="btn sm" data-act="setCustom" ${T.running ? "disabled" : ""}>Set custom</button>
+      <div class="custom-wrap">
+        <div class="custom-head"><span class="muted">Custom length</span><b id="customRead">${mins}m</b></div>
+        <div class="custom-row">
+          <button class="iconbtn" data-act="stepMin" data-d="-5" ${T.running ? "disabled" : ""}>−</button>
+          <input id="customMin" class="slider" type="range" min="5" max="120" step="5" value="${Math.min(120, Math.max(5, mins))}" ${T.running ? "disabled" : ""}>
+          <button class="iconbtn" data-act="stepMin" data-d="5" ${T.running ? "disabled" : ""}>+</button>
+        </div>
       </div>
       <input id="subject" class="input" style="max-width:260px;margin:12px auto 0;display:block;text-align:center" placeholder="Subject (e.g. Math)" value="${esc(T.subject)}" ${T.running ? "disabled" : ""}>
       <div class="ctrls">
@@ -532,6 +542,8 @@ function bind() {
   if (vol) vol.oninput = (e) => { if (window.StudiAudio) window.StudiAudio.setVolume(e.target.value / 100); };
   const subj = $("#subject");
   if (subj) subj.oninput = (e) => { T.subject = e.target.value.trim() || "General"; };
+  const slider = $("#customMin");
+  if (slider) slider.oninput = (e) => setTotal(+e.target.value, true);
 }
 
 document.addEventListener("click", (e) => {
@@ -563,7 +575,7 @@ document.addEventListener("click", (e) => {
     case "pauseTimer": pauseTimer(); break;
     case "resetTimer": resetTimer(); break;
     case "preset": setTotal(+d.m); break;
-    case "setCustom": { const v = +($("#customMin") || {}).value; if (v > 0) setTotal(v); else toast("Enter minutes (1–240)"); break; }
+    case "stepMin": { const cur = Math.round(T.total / 60); setTotal(Math.min(120, Math.max(5, cur + (+d.d)))); break; }
     case "sound": if (window.StudiAudio) { window.StudiAudio.play(d.s); render(); } break;
     case "toggleStrict": S.strictFocus = !S.strictFocus; save(); render(); break;
     case "block": S.blocked[d.site] = !S.blocked[d.site]; save(); render(); break;

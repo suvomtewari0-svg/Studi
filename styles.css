@@ -245,3 +245,38 @@ input[type=range]{accent-color:var(--accent);flex:1;}
 .reveal-loot{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;}
 .loot-pill{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;padding:8px 13px;border-radius:11px;background:var(--card2);border:1px solid var(--line);}
 .levelup .reveal-icon{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 40px color-mix(in srgb,var(--accent) 60%,transparent);}
+
+/* ===================== custom timer slider ===================== */
+.custom-wrap{max-width:340px;margin:14px auto 0;}
+.custom-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.custom-head b{font-family:'Bricolage Grotesque';font-size:18px;color:var(--accent);}
+.custom-row{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:0;}
+.slider{-webkit-appearance:none;appearance:none;flex:1;height:10px;border-radius:999px;
+  background:var(--card2);border:1px solid var(--line);outline:none;touch-action:none;}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));border:3px solid var(--card);cursor:pointer;
+  box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 60%,transparent);}
+.slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;border:3px solid var(--card);cursor:pointer;
+  background:var(--accent);box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 60%,transparent);}
+.slider:disabled{opacity:.5;}
+
+/* ===================== mobile lock: no page swipe/pan ===================== */
+*{-webkit-tap-highlight-color:transparent;}
+html,body{max-width:100%;overflow-x:hidden;overscroll-behavior:none;}
+img,input{max-width:100%;}
+.shell,.main,.card{min-width:0;}
+.grid{min-width:0;}
+
+@media(max-width:760px){
+  .main{padding:14px;}
+  .topbar{gap:10px;padding:10px 12px;}
+  .hud{gap:6px;}
+  .hud .stat{padding:5px 9px;font-size:12px;}
+  .pc-name{max-width:74px;}
+  .addrow{flex-wrap:wrap;}
+  .addrow .input{flex:1 1 140px;}
+  .ring{width:min(70vw,230px);height:min(70vw,230px);}
+  .ring-in{width:78%;height:78%;}
+  .clock{font-size:min(13vw,50px);}
+  .ob-card{padding:24px 20px;}
+}
