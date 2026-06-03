@@ -1,0 +1,12 @@
+{
+  "name": "Studi",
+  "short_name": "Studi",
+  "description": "Gamified studying — focus timer, streaks, and quests.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0b14",
+  "theme_color": "#0a0b14",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
