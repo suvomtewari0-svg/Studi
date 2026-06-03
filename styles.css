@@ -252,7 +252,7 @@ input[type=range]{accent-color:var(--accent);flex:1;}
 .custom-head b{font-family:'Bricolage Grotesque';font-size:18px;color:var(--accent);}
 .custom-row{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:0;}
 .slider{-webkit-appearance:none;appearance:none;flex:1;height:10px;border-radius:999px;
-  background:var(--card2);border:1px solid var(--line);outline:none;touch-action:none;}
+  background:var(--card2);border:1px solid var(--line);outline:none;touch-action:pan-x;}
 .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;
   background:linear-gradient(135deg,var(--accent),var(--accent2));border:3px solid var(--card);cursor:pointer;
   box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 60%,transparent);}

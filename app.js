@@ -43,6 +43,7 @@ const fresh = () => ({
   onboarded: false, stage: "profile",
   username: "", pfp: null, avColor: "#7c5cff", themeId: "nebula", dark: true,
   xp: 0, coins: 0, streak: 0, lastStudyDate: null,
+  durationMin: 25,
   tasks: [], schedule: [], sessions: [], inventory: [],
   lastCrate: null, strictFocus: false,
   blocked: {}, // site -> bool
@@ -122,7 +123,7 @@ function rollCrate() {
 }
 
 /* ---------------- timer ---------------- */
-let T = { running: false, total: 25 * 60, remaining: 25 * 60, handle: null, subject: "General" };
+let T = { running: false, total: (S.durationMin || 25) * 60, remaining: (S.durationMin || 25) * 60, handle: null, subject: "General" };
 function fmt(s) { return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }
 function timerPct() { return 100 - (T.remaining / T.total) * 100; }
 function paintTimer() {
@@ -133,7 +134,13 @@ function paintTimer() {
 function startTimer() {
   if (T.running) return;
   const subj = $("#subject"); if (subj && subj.value.trim()) T.subject = subj.value.trim();
+  // On a fresh start (not resuming a paused session), trust whatever the wheel shows right now.
+  if (T.remaining === T.total) {
+    const sl = $("#customMin");
+    if (sl) { const v = Math.max(1, Math.min(240, Math.round(+sl.value))); T.total = v * 60; T.remaining = v * 60; S.durationMin = v; save(); }
+  }
   if (!S.notify) ensureNotify();
+  clearInterval(T.handle);          // never allow a stale interval to survive
   T.running = true;
   if (S.strictFocus) showFocusOverlay();
   T.handle = setInterval(() => {
@@ -147,12 +154,15 @@ function pauseTimer() {
   T.running = false; clearInterval(T.handle); hideFocusOverlay(); render();
 }
 function resetTimer() {
-  T.running = false; clearInterval(T.handle); T.remaining = T.total; hideFocusOverlay(); render();
+  T.running = false; clearInterval(T.handle);
+  T.total = (S.durationMin || 25) * 60; T.remaining = T.total;
+  hideFocusOverlay(); render();
 }
 function setTotal(mins, light) {
   mins = Math.max(1, Math.min(240, Math.round(mins)));
   T.total = mins * 60;
   if (!T.running) T.remaining = T.total;
+  S.durationMin = mins; save();
   if (light) {
     paintTimer();
     const rd = $("#customRead"); if (rd) rd.textContent = mins + "m";
@@ -543,7 +553,10 @@ function bind() {
   const subj = $("#subject");
   if (subj) subj.oninput = (e) => { T.subject = e.target.value.trim() || "General"; };
   const slider = $("#customMin");
-  if (slider) slider.oninput = (e) => setTotal(+e.target.value, true);
+  if (slider) {
+    const upd = (e) => setTotal(+e.target.value, true);
+    slider.oninput = upd; slider.onchange = upd;
+  }
 }
 
 document.addEventListener("click", (e) => {
